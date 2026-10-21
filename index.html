@@ -145,6 +145,9 @@ textarea{min-height:120px;resize:vertical}
 .addr{font-family:var(--mono);font-size:14px;margin-top:22px;display:grid;gap:8px}
 .addr a{text-decoration:none;border-bottom:1px solid var(--accent)}
 .addr small{font-family:var(--body);color:var(--muted);font-size:13px}
+.acts{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.done{display:none;padding:16px 18px;border-left:3px solid var(--accent);background:var(--surface);font-size:15px}
+.done[data-show]{display:block}
 
 footer{border-top:1px solid var(--line);padding-block:28px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
 footer .logo{font-size:13px}
@@ -320,16 +323,39 @@ footer .logo{font-size:13px}
 </section>
 
 <section id="contact">
-  <div class="wrap">
+  <div class="wrap contact">
     <div class="sec-head" style="margin-bottom:0">
       <p class="eyebrow">Contact</p>
       <h2>まず、会社の話を聞かせてください。</h2>
       <p class="lead">御社のどこに一番大きな伸びしろがあるか、初回面談で一緒に整理します。静岡県内であれば伺います。オンラインでも構いません。</p>
       <div class="addr">
         <span>BASE&nbsp;&nbsp;静岡県富士市（準備中） ／ 東京</span>
-        <small>ご連絡は、お送りしているメールへの返信、またはご紹介いただいた支援機関・金融機関の担当者を通じてお願いします。</small>
+        <small>送信いただいた内容には、2営業日以内にメールでご返信します。</small>
       </div>
     </div>
+    <form id="inq" action="https://docs.google.com/forms/d/e/1FAIpQLSdD1B40tUMne11AWBwDncHuREzWKxahkD9YkYbQ-87EDvw_Kg/formResponse" method="POST" target="gf-sink" novalidate>
+      <div class="row2">
+        <div class="field"><label for="f-company">会社名</label><input id="f-company" name="entry.1290084232" required placeholder="株式会社〇〇"></div>
+        <div class="field"><label for="f-name">お名前</label><input id="f-name" name="entry.492822721" required placeholder="山田 太郎"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label for="f-email">メールアドレス</label><input id="f-email" name="entry.1997180705" type="email" required placeholder="you@example.co.jp"></div>
+        <div class="field"><label for="f-role">お立場</label>
+          <select id="f-role" name="entry.972915801">
+            <option>経営者・役員</option><option>営業・マーケティング担当</option><option>金融機関・支援機関</option><option>その他</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label for="f-topic">相談したいこと</label>
+        <select id="f-topic" name="entry.1982349152">
+          <option>海外展開支援</option><option>営業代行</option><option>集客支援</option><option>IT・AI導入</option><option>まだ決まっていない／複数</option>
+        </select>
+      </div>
+      <div class="field"><label for="f-msg">現在の状況・ご相談内容</label><textarea id="f-msg" name="entry.1240349758" placeholder="例：年に数件、海外から英語で問い合わせが来るが対応できていない"></textarea></div>
+      <div class="acts"><button class="btn btn-primary" type="submit" id="send">送信する</button> <span id="status" style="font-size:13px;color:var(--muted)"></span></div>
+      <div class="done" id="done">送信しました。内容を確認のうえ、ご記入いただいたメールアドレスにご返信します。</div>
+    </form>
+    <iframe name="gf-sink" id="gf-sink" style="display:none" title="送信用"></iframe>
   </div>
 </section>
 </main>
@@ -339,5 +365,24 @@ footer .logo{font-size:13px}
   <span>私たちは、静岡の製品をより広げます</span>
 </footer>
 
+<script>
+(function(){
+  var form=document.getElementById('inq'),sink=document.getElementById('gf-sink'),status=document.getElementById('status'),done=document.getElementById('done'),send=document.getElementById('send');
+  var submitted=false;
+  form.addEventListener('submit',function(e){
+    var g=function(id){return (document.getElementById(id).value||'').trim();};
+    if(!g('f-company')||!g('f-name')||!g('f-email')){e.preventDefault();status.textContent='会社名・お名前・メールアドレスを入力してください。';return;}
+    submitted=true;send.disabled=true;status.textContent='送信しています…';
+  });
+  sink.addEventListener('load',function(){
+    if(!submitted)return;
+    status.textContent='';
+    form.querySelectorAll('input,textarea,select,button').forEach(function(el){el.style.display='none';});
+    form.querySelectorAll('label').forEach(function(el){el.style.display='none';});
+    done.setAttribute('data-show','');
+    done.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+})();
+</script>
 </body>
 </html>
